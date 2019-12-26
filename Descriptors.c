@@ -45,9 +45,46 @@
  */
 const USB_Descriptor_HIDReport_Datatype_t PROGMEM MediaControlReport[] =
 {
+        /* Keyboard Report */
+        /* NB: This isn't used, it's only purpose is so Windows doesn't suspend us */
+        HID_RI_USAGE_PAGE(8, 0x01), /* Generic Desktop */
+        HID_RI_USAGE(8, 0x06), /* Keyboard */
+        HID_RI_COLLECTION(8, 0x01), /* Application */
+                HID_RI_REPORT_ID(8, HID_REPORTID_KeyboardReport),
+                HID_RI_USAGE_PAGE(8, 0x07), /* Key Codes */
+                HID_RI_USAGE_MINIMUM(8, 0xE0), /* Keyboard Left Control */
+                HID_RI_USAGE_MAXIMUM(8, 0xE7), /* Keyboard Right GUI */
+                HID_RI_LOGICAL_MINIMUM(8, 0x00),
+                HID_RI_LOGICAL_MAXIMUM(8, 0x01),
+                HID_RI_REPORT_SIZE(8, 0x01),
+                HID_RI_REPORT_COUNT(8, 0x08),
+                HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
+                HID_RI_REPORT_COUNT(8, 0x01),
+                HID_RI_REPORT_SIZE(8, 0x08),
+                HID_RI_INPUT(8, HID_IOF_CONSTANT),
+                HID_RI_USAGE_PAGE(8, 0x08), /* LEDs */
+                HID_RI_USAGE_MINIMUM(8, 0x01), /* Num Lock */
+                HID_RI_USAGE_MAXIMUM(8, 0x05), /* Kana */
+                HID_RI_REPORT_COUNT(8, 0x05),
+                HID_RI_REPORT_SIZE(8, 0x01),
+                HID_RI_OUTPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE | HID_IOF_NON_VOLATILE),
+                HID_RI_REPORT_COUNT(8, 0x01),
+                HID_RI_REPORT_SIZE(8, 0x03),
+                HID_RI_OUTPUT(8, HID_IOF_CONSTANT),
+                HID_RI_LOGICAL_MINIMUM(8, 0x00),
+                HID_RI_LOGICAL_MAXIMUM(8, 0x65),
+                HID_RI_USAGE_PAGE(8, 0x07), /* Keyboard */
+                HID_RI_USAGE_MINIMUM(8, 0x00), /* Reserved (no event indicated) */
+                HID_RI_USAGE_MAXIMUM(8, 0x65), /* Keyboard Application */
+                HID_RI_REPORT_COUNT(8, 0x06),
+                HID_RI_REPORT_SIZE(8, 0x08),
+                HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_ARRAY | HID_IOF_ABSOLUTE),
+        HID_RI_END_COLLECTION(0),
+
 	HID_RI_USAGE_PAGE(8, 0x0C), /* Consumer Page */
 	HID_RI_USAGE(8, 0x01), /* Consumer Controls */
 	HID_RI_COLLECTION(8, 0x01), /* Application */
+		HID_RI_REPORT_ID(8, HID_REPORTID_MediaControlReport),
 		HID_RI_USAGE(8, 0xB0), /* Play */
 		HID_RI_USAGE(8, 0xB1), /* Pause */
 		HID_RI_USAGE(8, 0xB3), /* Fast Forward */

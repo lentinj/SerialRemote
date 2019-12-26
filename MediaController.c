@@ -166,6 +166,7 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
 	/* Update the Media Control report with the user button presses */
 	MediaReport->Mute          = ((ButtonStatus_LCL & BUTTONS_BUTTON1) ? true : false);
 
+	*ReportID   = HID_REPORTID_MediaControlReport;
 	*ReportSize = sizeof(USB_MediaReport_Data_t);
 	return false;
 }

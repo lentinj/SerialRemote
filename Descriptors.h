@@ -83,6 +83,14 @@
 		/** Size in bytes of the Media Control HID reporting IN endpoint. */
 		#define MEDIACONTROL_HID_EPSIZE           8
 
+	/* Enums: */
+		/** Enum for the HID report IDs used in the device. */
+		enum
+		{
+			HID_REPORTID_KeyboardReport = 0x01, /**< Report ID for the Keyboard report within the device. */
+			HID_REPORTID_MediaControlReport = 0x02, /**< Report ID for the SystemControl report within the device. */
+		} HID_Report_IDs;
+
 	/* Function Prototypes: */
 		uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 		                                    const uint16_t wIndex,
