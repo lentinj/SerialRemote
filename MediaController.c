@@ -90,7 +90,6 @@ void SetupHardware()
 #endif
 
 	/* Hardware Initialization */
-	Joystick_Init();
 	LEDs_Init();
 	Buttons_Init();
 	USB_Init();
@@ -150,16 +149,10 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
 {
 	USB_MediaReport_Data_t* MediaReport = (USB_MediaReport_Data_t*)ReportData;
 
-	uint8_t JoyStatus_LCL    = Joystick_GetStatus();
 	uint8_t ButtonStatus_LCL = Buttons_GetStatus();
 
 	/* Update the Media Control report with the user button presses */
 	MediaReport->Mute          = ((ButtonStatus_LCL & BUTTONS_BUTTON1) ? true : false);
-	MediaReport->PlayPause     = ((JoyStatus_LCL & JOY_PRESS) ? true : false);
-	MediaReport->VolumeUp      = ((JoyStatus_LCL & JOY_UP)    ? true : false);
-	MediaReport->VolumeDown    = ((JoyStatus_LCL & JOY_DOWN)  ? true : false);
-	MediaReport->PreviousTrack = ((JoyStatus_LCL & JOY_LEFT)  ? true : false);
-	MediaReport->NextTrack     = ((JoyStatus_LCL & JOY_RIGHT) ? true : false);
 
 	*ReportSize = sizeof(USB_MediaReport_Data_t);
 	return false;
