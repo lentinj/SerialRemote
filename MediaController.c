@@ -65,6 +65,8 @@ USB_ClassInfo_HID_Device_t MediaControl_HID_Interface =
  */
 int main(void)
 {
+	uint8_t ButtonStatus_LCL;
+
 	SetupHardware();
 
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
@@ -74,6 +76,16 @@ int main(void)
 	{
 		HID_Device_USBTask(&MediaControl_HID_Interface);
 		USB_USBTask();
+
+		if (USB_DeviceState != DEVICE_STATE_Configured ) { // TODO: Should be checking for suspended?
+			ButtonStatus_LCL  = Buttons_GetStatus();
+
+			if (USB_Device_RemoteWakeupEnabled) {
+				if (ButtonStatus_LCL & BUTTONS_BUTTON1) {
+					USB_Device_SendRemoteWakeup();
+				}
+			}
+		}
 	}
 }
 
