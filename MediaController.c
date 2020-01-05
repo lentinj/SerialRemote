@@ -36,8 +36,11 @@
 
 #include "MediaController.h"
 
-/** Buffer to hold the previously generated Media Control HID report, for comparison purposes inside the HID class driver. */
-static uint8_t PrevMediaControlHIDReportBuffer[sizeof(USB_MediaReport_Data_t)];
+/** Buffer to hold the previously generated HID report, for comparison purposes inside the HID class driver. */
+static uint8_t PrevHIDReportBuffer[MAX(
+	sizeof(USB_MediaReport_Data_t),
+	sizeof(USB_SystemControlReport_Data_t)
+)];
 
 /** LUFA HID Class driver interface configuration and state information. This structure is
  *  passed to all HID Class driver functions, so that multiple instances of the same class
@@ -54,8 +57,8 @@ USB_ClassInfo_HID_Device_t MediaControl_HID_Interface =
 						.Size                 = MEDIACONTROL_HID_EPSIZE,
 						.Banks                = 1,
 					},
-				.PrevReportINBuffer           = PrevMediaControlHIDReportBuffer,
-				.PrevReportINBufferSize       = sizeof(PrevMediaControlHIDReportBuffer),
+				.PrevReportINBuffer           = PrevHIDReportBuffer,
+				.PrevReportINBufferSize       = sizeof(PrevHIDReportBuffer),
 			},
     };
 
@@ -159,15 +162,23 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
                                          void* ReportData,
                                          uint16_t* const ReportSize)
 {
-	USB_MediaReport_Data_t* MediaReport = (USB_MediaReport_Data_t*)ReportData;
-
 	uint8_t ButtonStatus_LCL = Buttons_GetStatus();
 
-	/* Update the Media Control report with the user button presses */
-	MediaReport->Mute          = ((ButtonStatus_LCL & BUTTONS_BUTTON1) ? true : false);
+	if ((ButtonStatus_LCL & BUTTONS_BUTTON1)) {
+		USB_SystemControlReport_Data_t* SystemControlReport = (USB_SystemControlReport_Data_t*)ReportData;
 
-	*ReportID   = HID_REPORTID_MediaControlReport;
-	*ReportSize = sizeof(USB_MediaReport_Data_t);
+		*ReportID   = HID_REPORTID_SystemControlReport;
+		*ReportSize = sizeof(USB_SystemControlReport_Data_t);
+		SystemControlReport->Sleep = true;
+
+	} else {
+		USB_MediaReport_Data_t* MediaReport = (USB_MediaReport_Data_t*)ReportData;
+
+		*ReportID   = HID_REPORTID_MediaControlReport;
+		*ReportSize = sizeof(USB_MediaReport_Data_t);
+		MediaReport->Mute          = ((ButtonStatus_LCL & BUTTONS_BUTTON1) ? true : false);
+	}
+
 	return false;
 }
 

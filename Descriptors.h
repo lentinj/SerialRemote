@@ -89,6 +89,7 @@
 		{
 			HID_REPORTID_KeyboardReport = 0x01, /**< Report ID for the Keyboard report within the device. */
 			HID_REPORTID_MediaControlReport = 0x02, /**< Report ID for the SystemControl report within the device. */
+			HID_REPORTID_SystemControlReport = 0x03, /**< Report ID for the SystemControl report within the device. */
 		} HID_Report_IDs;
 
 	/* Function Prototypes: */

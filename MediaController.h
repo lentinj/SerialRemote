@@ -85,6 +85,14 @@
 			unsigned RESERVED       : 5;
 		} ATTR_PACKED USB_MediaReport_Data_t;
 
+		typedef struct
+		{
+			unsigned Power          : 1;
+			unsigned Sleep          : 1;
+			unsigned Wakeup         : 1;
+			unsigned RESERVED       : 5;
+		} ATTR_PACKED USB_SystemControlReport_Data_t;
+
 	/* Function Prototypes: */
 		void SetupHardware(void);
 
