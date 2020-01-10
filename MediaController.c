@@ -63,12 +63,30 @@ USB_ClassInfo_HID_Device_t MediaControl_HID_Interface =
     };
 
 
+/** Collect user input, either from serial port or button */
+uint8_t get_state(void)
+{
+	uint8_t ButtonStatus_LCL = Buttons_GetStatus();
+	int16_t serial_in = Serial_ReceiveByte();
+
+	if (serial_in >= 0) {
+		return (uint8_t)serial_in;
+	}
+
+	if ((ButtonStatus_LCL & BUTTONS_BUTTON1)) {
+		/* Map BUTTON1 to receiving 0x01 */
+		return 0x01;
+	}
+
+	return 0x00;
+}
+
 /** Main program entry point. This routine contains the overall program flow, including initial
  *  setup of all components and the main program loop.
  */
 int main(void)
 {
-	uint8_t ButtonStatus_LCL;
+	uint8_t state;
 
 	SetupHardware();
 
@@ -81,10 +99,9 @@ int main(void)
 		USB_USBTask();
 
 		if (USB_DeviceState != DEVICE_STATE_Configured ) { // TODO: Should be checking for suspended?
-			ButtonStatus_LCL  = Buttons_GetStatus();
-
 			if (USB_Device_RemoteWakeupEnabled) {
-				if (ButtonStatus_LCL & BUTTONS_BUTTON1) {
+				state = get_state();
+				if (state == 0x01 || state == 0x31) { // Button or "1"
 					USB_Device_SendRemoteWakeup();
 				}
 			}
@@ -107,6 +124,7 @@ void SetupHardware()
 	/* Hardware Initialization */
 	LEDs_Init();
 	Buttons_Init();
+	Serial_Init(600, false);
 	USB_Init();
 }
 
@@ -162,21 +180,31 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
                                          void* ReportData,
                                          uint16_t* const ReportSize)
 {
-	uint8_t ButtonStatus_LCL = Buttons_GetStatus();
+	uint8_t state = get_state();
 
-	if ((ButtonStatus_LCL & BUTTONS_BUTTON1)) {
+	if (state == 0x01 || state == 0x30) {
 		USB_SystemControlReport_Data_t* SystemControlReport = (USB_SystemControlReport_Data_t*)ReportData;
 
 		*ReportID   = HID_REPORTID_SystemControlReport;
 		*ReportSize = sizeof(USB_SystemControlReport_Data_t);
-		SystemControlReport->Sleep = true;
+		SystemControlReport->Sleep = (state == 0x01 || state == 0x30); // Button or "0"
 
-	} else {
+	} else if (state > 0) {
 		USB_MediaReport_Data_t* MediaReport = (USB_MediaReport_Data_t*)ReportData;
 
 		*ReportID   = HID_REPORTID_MediaControlReport;
 		*ReportSize = sizeof(USB_MediaReport_Data_t);
-		MediaReport->Mute          = ((ButtonStatus_LCL & BUTTONS_BUTTON1) ? true : false);
+		MediaReport->Play           = (state == 0x79); // y
+		MediaReport->Pause          = (state == 0x65); // e
+		MediaReport->FForward       = (state == 0x66); // f
+		MediaReport->Rewind         = (state == 0x72); // r
+		MediaReport->NextTrack      = (state == 0x6e); // n
+		MediaReport->PreviousTrack  = (state == 0x70); // p
+		MediaReport->Stop           = (state == 0x73); // s
+		MediaReport->PlayPause      = (state == 0x7a); // z
+		MediaReport->Mute           = (state == 0x6d); // m
+		MediaReport->VolumeUp       = (state == 0x75); // u
+		MediaReport->VolumeDown     = (state == 0x64); // d
 	}
 
 	return false;
