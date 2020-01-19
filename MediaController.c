@@ -62,6 +62,7 @@ USB_ClassInfo_HID_Device_t MediaControl_HID_Interface =
 			},
     };
 
+uint8_t clear_event = 0;
 
 /** Collect user input, either from serial port or button */
 uint8_t get_state(void)
@@ -180,6 +181,17 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
                                          void* ReportData,
                                          uint16_t* const ReportSize)
 {
+	if (clear_event > 0) {
+		/* All keypresses should be momentary, so clear last press if any */
+		*ReportID = clear_event;
+		if (clear_event == HID_REPORTID_SystemControlReport) {
+			*ReportSize = sizeof(USB_SystemControlReport_Data_t);
+		} else if (clear_event == HID_REPORTID_MediaControlReport) {
+			*ReportSize = sizeof(USB_MediaReport_Data_t);
+		}
+		clear_event = 0;
+		return true;
+	}
 	uint8_t state = get_state();
 
 	if (state == 0x01 || state == 0x30) {
@@ -187,6 +199,7 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
 
 		*ReportID   = HID_REPORTID_SystemControlReport;
 		*ReportSize = sizeof(USB_SystemControlReport_Data_t);
+		clear_event = *ReportID;
 		SystemControlReport->Sleep = (state == 0x01 || state == 0x30); // Button or "0"
 
 	} else if (state > 0) {
@@ -194,6 +207,7 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
 
 		*ReportID   = HID_REPORTID_MediaControlReport;
 		*ReportSize = sizeof(USB_MediaReport_Data_t);
+		clear_event = *ReportID;
 		MediaReport->Play           = (state == 0x79); // y
 		MediaReport->Pause          = (state == 0x65); // e
 		MediaReport->FForward       = (state == 0x66); // f
