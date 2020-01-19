@@ -46,7 +46,6 @@
 const USB_Descriptor_HIDReport_Datatype_t PROGMEM MediaControlReport[] =
 {
         /* Keyboard Report */
-        /* NB: This isn't used, it's only purpose is so Windows doesn't suspend us */
         HID_RI_USAGE_PAGE(8, 0x01), /* Generic Desktop */
         HID_RI_USAGE(8, 0x06), /* Keyboard */
         HID_RI_COLLECTION(8, 0x01), /* Application */
