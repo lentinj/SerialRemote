@@ -1,4 +1,11 @@
 /*
+  SerialRemote: Issue power / multimedia commands via. serial port
+  Copyright 2020 Jamie Lentin (jm@lentin.co.uk)
+
+  Based on LUFA Library:
+*/
+
+/*
              LUFA Library
      Copyright (C) Dean Camera, 2019.
 
