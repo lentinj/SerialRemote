@@ -28,13 +28,7 @@
   this software.
 */
 
-/** \file
- *
- *  Main source file for the MediaControl project. This file contains the main tasks of
- *  the demo and is responsible for the initial application hardware configuration.
- */
-
-#include "MediaController.h"
+#include "SerialRemote.h"
 
 /** Buffer to hold the previously generated HID report, for comparison purposes inside the HID class driver. */
 static uint8_t PrevHIDReportBuffer[

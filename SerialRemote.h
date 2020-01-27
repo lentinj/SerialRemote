@@ -28,13 +28,8 @@
   this software.
 */
 
-/** \file
- *
- *  Header file for MediaControl.c.
- */
-
-#ifndef _MEDIACONTROL_H_
-#define _MEDIACONTROL_H_
+#ifndef _SERIALREMOTE_H_
+#define _SERIALREMOTE_H_
 
 	/* Includes: */
 		#include <avr/io.h>
