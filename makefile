@@ -11,9 +11,18 @@
 
 # Run "make help" for target help.
 
-MCU          = at90usb162
+# Settings for a 5v Arduino Pro Micro (make && make avrdude)
+# NB: Must run make avrdude within 8 seconds of reset (short GND & RST)
+MCU          = atmega32u4
+BOARD        = MICRO
+AVRDUDE_PROGRAMMER=avr109
+AVRDUDE_PORT=/dev/ttyACM0
+
+# Settings for minimus (make && make dfu)
+#MCU          = at90usb162
+#BOARD        = MINIMUS
 ARCH         = AVR8
-BOARD        = MINIMUS
+
 F_CPU        = 16000000
 F_USB        = $(F_CPU)
 OPTIMIZATION = s

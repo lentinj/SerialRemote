@@ -70,17 +70,19 @@ uint8_t clear_event = 0;
 /** Collect user input, either from serial port or button */
 uint8_t get_state(void)
 {
-	uint8_t ButtonStatus_LCL = Buttons_GetStatus();
-	int16_t serial_in = Serial_ReceiveByte();
 
+	int16_t serial_in = Serial_ReceiveByte();
 	if (serial_in >= 0) {
 		return (uint8_t)serial_in;
 	}
 
+#ifdef BUTTONS_BUTTON1
+	uint8_t ButtonStatus_LCL = Buttons_GetStatus();
 	if ((ButtonStatus_LCL & BUTTONS_BUTTON1)) {
 		/* Map BUTTON1 to receiving 0x01 */
 		return 0x01;
 	}
+#endif
 
 	return 0x00;
 }
@@ -127,7 +129,9 @@ void SetupHardware()
 
 	/* Hardware Initialization */
 	LEDs_Init();
+#ifdef BUTTONS_BUTTON1
 	Buttons_Init();
+#endif
 	Serial_Init(600, false);
 	USB_Init();
 }
