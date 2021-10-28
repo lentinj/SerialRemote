@@ -18,6 +18,8 @@ with Windows 10 and Linux.
 
 ## Building and installing
 
+    apt install gcc-avr avr-libc dfu-programmer avrdude
+
 Clone the code and make sure LUFA is downloaded with:
 
     git submodule update --init
