@@ -132,7 +132,7 @@ void SetupHardware()
 #ifdef BUTTONS_BUTTON1
 	Buttons_Init();
 #endif
-	Serial_Init(600, false);
+	Serial_Init(9600, false);
 	USB_Init();
 }
 

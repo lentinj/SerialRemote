@@ -46,11 +46,11 @@ Device Manager.
 The button on your board (if LUFA has configured one) will toggle the attached
 PC awake / suspended.
 
-Send characters at 600 baud on the serial port. Attach serial transmit from a
+Send characters at 9600 baud on the serial port. Attach serial transmit from a
 FTDI or similar to ``PD2`` (or whichever is the serial receive pin). You could
 use picocom to test, e.g:
 
-    picocom -b600 -fn /dev/ttyUSB0
+    picocom -b9600 -fn /dev/ttyUSB0
     (press m for mute)
 
 The firmware makes no attempt to buffer mutliple commands, it's assumed there's
@@ -66,7 +66,7 @@ The main reason for doing this is to be able to control a PC via. a
 Connect serial transmit pin from the ESP8266 to ``PD2`` (or whichever is the
 serial receive pin).
 
-Set baud rate with ``Baudrate 600`` then send commands with ``SerialSend2 m``
+Set baud rate with ``Baudrate 9600`` then send commands with ``SerialSend2 m``
 for mute, e.g.
 
 You can suspend/wake the computer in sync with the main relay:
