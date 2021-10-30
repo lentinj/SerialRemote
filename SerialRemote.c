@@ -101,6 +101,7 @@ int main(void)
 
 	for (;;)
 	{
+		wdt_reset();
 		HID_Device_USBTask(&MediaControl_HID_Interface);
 		USB_USBTask();
 
@@ -119,9 +120,9 @@ int main(void)
 void SetupHardware()
 {
 #if (ARCH == ARCH_AVR8)
-	/* Disable watchdog if enabled by bootloader/fuses */
-	MCUSR &= ~(1 << WDRF);
+	MCUSR = 0;
 	wdt_disable();
+	wdt_enable(WDTO_500MS);
 
 	/* Disable clock division */
 	clock_prescale_set(clock_div_1);
@@ -203,7 +204,11 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
 	}
 	uint8_t state = get_state();
 
-	if (state == 0x01 || state == 0x30) {
+	if (state == 0x21) { // !
+		// Sit in tight loop and wait for watchdog to kick in
+		for (;;) { }
+
+	} else if (state == 0x01 || state == 0x30) {
 		USB_SystemControlReport_Data_t* SystemControlReport = (USB_SystemControlReport_Data_t*)ReportData;
 
 		*ReportID   = HID_REPORTID_SystemControlReport;
