@@ -43,8 +43,33 @@ Device Manager.
 
 ## Controlling
 
-The button on your board (if LUFA has configured one) will toggle the attached
-PC awake / suspended.
+Commands can come from several sources:
+
+### Button
+
+For an Arduino Pro Micro, PB6 / pin 10 is configured as a suspend/wake toggle
+in [Buttons.h](Board/Buttons.h).
+
+For other ``BOARD``s, their ``BUTTONS_BUTTON1`` is used if available.
+
+### Infra-red
+
+Commands can also be sent over IR, the main reason for doing this is to be able
+to control a PC via. a [tasmota enabled Sonoff](https://github.com/arendst/Tasmota).
+
+The input from the infrared receiver is expected to be on PD1 / pin 2, and PD0
+/ pin 3 is kept high to power the receiver to make wiring easy.
+
+It listens for NEC-encoded commands with address 0x42, these can be sent with
+[tasmota configured for IR transmitting](https://tasmota.github.io/docs/IR-Remote/):
+
+* Power on:  ``IRsend {"Protocol":"NEC","Bits":32,"Data":0x42bd807f}``
+* Power off: ``IRsend {"Protocol":"NEC","Bits":32,"Data":0x42bd00ff}``
+* Space " ": ``IRsend {"Protocol":"NEC","Bits":32,"Data":0x42bd04fb}``
+
+The [encode.py] script can generate strings for other commands.
+
+### Serial
 
 Send characters at 9600 baud on the serial port. Attach serial transmit from a
 FTDI or similar to ``PD2`` (or whichever is the serial receive pin). You could
@@ -58,24 +83,5 @@ a human the other end.
 
 The full list of supported commands [can be seen in the source](SerialRemote.c#L202).
 
-## Controlling from tasmota
-
-The main reason for doing this is to be able to control a PC via. a
-[tasmota enabled Sonoff](https://github.com/arendst/Tasmota).
-
-Connect serial transmit pin from the ESP8266 to ``PD2`` (or whichever is the
-serial receive pin).
-
-Set baud rate with ``Baudrate 9600`` then send commands with ``SerialSend2 m``
-for mute, e.g.
-
-You can suspend/wake the computer in sync with the main relay:
-
-    Rule1 1
-    Rule1 ON Power1#state=1 DO SerialSend2 1 ENDON
-          ON Power1#state=0 DO SerialSend2 0 ENDON
-
-You could also use a remote to do play/pause:
-
-    Rule1 1
-    Rule1 ON IrReceived#Data=0x471 DO SerialSend2 " " ENDON
+Note: Whilst you could connect a Sonoff directly over the serial link this is
+**not recommended** as the Sonoff's ground may not be isolated from mains.
