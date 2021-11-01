@@ -70,6 +70,10 @@ uint8_t clear_event = 0;
 /** Collect user input, either from serial port or button */
 uint8_t get_state(void)
 {
+	struct IR_Packet ir_packet;
+	if (check_new_packet(&ir_packet)) {
+		if (ir_packet.addr == 0x42) return ir_packet.command;
+	}
 
 	int16_t serial_in = Serial_ReceiveByte();
 	if (serial_in >= 0) {
@@ -133,6 +137,7 @@ void SetupHardware()
 #ifdef BUTTONS_BUTTON1
 	Buttons_Init();
 #endif
+	init_receiver();
 	Serial_Init(9600, false);
 	USB_Init();
 }
